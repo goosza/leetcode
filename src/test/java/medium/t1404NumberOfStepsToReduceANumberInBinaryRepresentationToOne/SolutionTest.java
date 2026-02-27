@@ -1,4 +1,4 @@
-package medium.t1404NumberOfStepsToReduceANumberInBinaryRepresentationToOne.t1404NumberOfStepsToReduceANumberInBinaryRepresentationToOne;
+package medium.t1404NumberOfStepsToReduceANumberInBinaryRepresentationToOne;
 
 import com.goosza.algorithmics.medium.t1404NumberOfStepsToReduceANumberInBinaryRepresentationToOne.Solution;
 import org.junit.jupiter.api.BeforeAll;
