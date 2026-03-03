@@ -1,34 +1,60 @@
 package com.goosza.algorithmics.hard.t2581CountNumberOfPossibleRootNodes;
 
-import java.sql.SQLOutput;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class Solution {
 
-    public HashMap<Integer,List<Integer>> adjacencyMatrix(int[][] edges){
-        HashMap<Integer, List<Integer>> adjacencyMatrix = new HashMap<>();
-        for (int[] edge : edges) {
-            if (adjacencyMatrix.containsKey(edge[0])) {
-                adjacencyMatrix.get(edge[0]).add(edge[1]);
-            } else {
-                adjacencyMatrix.put(edge[0], new ArrayList<>());
-                adjacencyMatrix.get(edge[0]).add(edge[1]);
-            }
-            if (adjacencyMatrix.containsKey(edge[1])) {
-                adjacencyMatrix.get(edge[1]).add(edge[0]);
-            } else {
-                adjacencyMatrix.put(edge[1], new ArrayList<>());
-                adjacencyMatrix.get(edge[1]).add(edge[0]);
+    public List<List<Integer>> adjacencyMatrix(int[][] edges, int length){
+        List<List<Integer>> adj = new ArrayList<>();
+        for (int i = 0; i < length; i++) {
+            adj.add(new ArrayList<>());
+        }
+        for (int[] edge: edges) {
+            adj.get(edge[0]).add(edge[1]);
+            adj.get(edge[1]).add(edge[0]);
+        }
+        return adj;
+    }
+
+    public void dfs(List<List<Integer>> adj, int node, int parent, Set<String> guesses, int[] score) {
+        for (int neighbour: adj.get(node)) {
+            if (neighbour != parent) {
+                if (guesses.contains(node + ":" + neighbour)) {
+                    score[0]++;
+                }
+                dfs(adj, neighbour, node, guesses, score);
             }
         }
-        return adjacencyMatrix;
+    }
+
+    public void reroot(List<List<Integer>> adj, int node, int parent, int currentScore, Set<String> guesses, int k, int[] result) {
+        if (currentScore >= k) result[0]++;
+        for (int neighbour: adj.get(node)) {
+            if (neighbour != parent) {
+                int newScore = currentScore;
+                if (guesses.contains(node + ":" + neighbour)) newScore--;
+                if (guesses.contains(neighbour + ":" + node)) newScore++;
+                reroot(adj, neighbour, node, newScore, guesses, k, result);
+            }
+        }
     }
 
     public int rootCount(int[][] edges, int[][] guesses, int k) {
-        HashMap<Integer, List<Integer>> adjacencyMatrix = adjacencyMatrix(edges);
-        return 0;
+        int length = edges.length + 1;
+        List<List<Integer>> adj = adjacencyMatrix(edges, length);
+        Set<String> guessSet = new HashSet<>();
+        for (int[] guess: guesses) {
+            guessSet.add(guess[0] + ":" + guess[1]);
+        }
+
+        int[] score = {0};
+        int[] result = {0};
+
+        dfs(adj, 0, -1, guessSet, score);
+
+        reroot(adj, 0, -1, score[0], guessSet, k, result);
+
+        return result[0];
     }
 }
 
