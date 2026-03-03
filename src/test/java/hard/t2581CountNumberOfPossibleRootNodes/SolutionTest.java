@@ -24,7 +24,7 @@ public class SolutionTest {
 
     @Test
     void adjacencyMatrixTest(){
-        List<List<Integer>> adjacencyMatrix = solution.adjacencyMatrix(new int[][]{{0,1}, {1,2}, {1,3}, {4,2}}, 5);
+        List<List<Integer>> adjacencyMatrix = solution.adjacencyList(new int[][]{{0,1}, {1,2}, {1,3}, {4,2}}, 5);
         for (int i = 0; i < adjacencyMatrix.size(); i++) {
             System.out.println(i + ":" + adjacencyMatrix.get(i));
         }

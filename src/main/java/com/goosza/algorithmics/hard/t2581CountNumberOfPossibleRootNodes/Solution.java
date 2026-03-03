@@ -4,7 +4,7 @@ import java.util.*;
 
 public class Solution {
 
-    public List<List<Integer>> adjacencyMatrix(int[][] edges, int length){
+    public List<List<Integer>> adjacencyList(int[][] edges, int length){
         List<List<Integer>> adj = new ArrayList<>();
         for (int i = 0; i < length; i++) {
             adj.add(new ArrayList<>());
@@ -16,10 +16,10 @@ public class Solution {
         return adj;
     }
 
-    public void dfs(List<List<Integer>> adj, int node, int parent, Set<String> guesses, int[] score) {
-        for (int neighbour: adj.get(node)) {
+    public void dfs(int[][] adj, int node, int parent, Set<Integer> guesses, int[] score) {
+        for (int neighbour: adj[node]) {
             if (neighbour != parent) {
-                if (guesses.contains(node + ":" + neighbour)) {
+                if (guesses.contains(node * 50001 + neighbour)) {
                     score[0]++;
                 }
                 dfs(adj, neighbour, node, guesses, score);
@@ -27,13 +27,13 @@ public class Solution {
         }
     }
 
-    public void reroot(List<List<Integer>> adj, int node, int parent, int currentScore, Set<String> guesses, int k, int[] result) {
+    public void reroot(int[][] adj, int node, int parent, int currentScore, Set<Integer> guesses, int k, int[] result) {
         if (currentScore >= k) result[0]++;
-        for (int neighbour: adj.get(node)) {
+        for (int neighbour: adj[node]) {
             if (neighbour != parent) {
                 int newScore = currentScore;
-                if (guesses.contains(node + ":" + neighbour)) newScore--;
-                if (guesses.contains(neighbour + ":" + node)) newScore++;
+                if (guesses.contains(node * 50001 + neighbour)) newScore--;
+                if (guesses.contains(neighbour * 50001 + node)) newScore++;
                 reroot(adj, neighbour, node, newScore, guesses, k, result);
             }
         }
@@ -41,10 +41,25 @@ public class Solution {
 
     public int rootCount(int[][] edges, int[][] guesses, int k) {
         int length = edges.length + 1;
-        List<List<Integer>> adj = adjacencyMatrix(edges, length);
-        Set<String> guessSet = new HashSet<>();
+        int[] degree = new int[length];
+        for (int[] edge: edges) {
+            degree[edge[0]]++;
+            degree[edge[1]]++;
+        }
+
+        int[][] adj = new int[length][];
+        for (int i = 0; i < length; i++) adj[i] = new int[degree[i]];
+
+        int[] idx = new int[length];
+
+        for (int[] edge : edges) {
+            adj[edge[0]][idx[edge[0]]++] = edge[1];
+            adj[edge[1]][idx[edge[1]]++] = edge[0];
+        }
+
+        Set<Integer> guessSet = new HashSet<>();
         for (int[] guess: guesses) {
-            guessSet.add(guess[0] + ":" + guess[1]);
+            guessSet.add(guess[0] * 50001 + guess[1]);
         }
 
         int[] score = {0};
